@@ -1,18 +1,17 @@
 Package: pedxing
 Type: Package
-Title: Multi-phase decision making process
-Version: 0.0.0.1
-Date: 2022-09-06
+Title: Crossing decisions
+Version: 0.0.0.2
+Date: 2022-11-14
 Author: Yi-Shin Lin [aut, cre]
 Maintainer: Yi-Shin Lin <yishinlin@pm.me>
-Description: Multi-phase decision making process
+Description: Crossing decisions
 License: GPL 3
-Imports: Rcpp (>= 1.0.1), RcppParallel
-LinkingTo: Rcpp, RcppArmadillo, RcppParallel
+Imports: Rcpp (>= 1.0.1)
+LinkingTo: Rcpp, RcppArmadillo
 SystemRequirements: GNU make
 LazyData: TRUE
 Suggests: testthat
 RoxygenNote: 7.2.1
 Encoding: UTF-8
 NeedsCompilation: yes
-
