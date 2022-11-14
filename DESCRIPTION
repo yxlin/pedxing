@@ -1,0 +1,18 @@
+Package: pedxing
+Type: Package
+Title: Multi-phase decision making process
+Version: 0.0.0.1
+Date: 2022-09-06
+Author: Yi-Shin Lin [aut, cre]
+Maintainer: Yi-Shin Lin <yishinlin@pm.me>
+Description: Multi-phase decision making process
+License: GPL 3
+Imports: Rcpp (>= 1.0.1), RcppParallel
+LinkingTo: Rcpp, RcppArmadillo, RcppParallel
+SystemRequirements: GNU make
+LazyData: TRUE
+Suggests: testthat
+RoxygenNote: 7.2.1
+Encoding: UTF-8
+NeedsCompilation: yes
+
