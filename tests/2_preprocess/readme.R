@@ -9,15 +9,15 @@ setwd(wk)
 options(digits = 4)
 # source("tests/testthat/1_descriptive/functions/utils.R")
 load("data/pedxing.RData")
-## do data.frame composes of two behavioural data sets, one from the online
+## d data.frame composes of two behavioural data sets, one from the online
 ## road-crossing experiment and the other is from the laboratory road-crossing
 ## experiment. The latter recorded also brain activities. See BDF file in the 
 ## pedxingEEG
 
 ## I note the less obvious columns only. The column with clear column names 
 ## should have explained themselves. Other less clear, unexplained columns 
-## are less relevant to the analysis and can be found in the experiment planning
-## overview document.
+## are less relevant to the analysis and can be found in the other 
+## document.
 
 ## "Delay" the delay time between the chime and the appearance of the car
 ## "Hit" whether the response resulting in the pedestrian being hit by the car
