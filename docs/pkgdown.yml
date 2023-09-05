@@ -1,8 +1,0 @@
-pandoc: 2.17.1.1
-pkgdown: 2.0.6
-pkgdown_sha: ~
-articles:
-  0_preprocessing: web_only/0_preprocessing.html
-  1_glm: web_only/1_glm.html
-last_built: 2022-11-14T13:20Z
-
