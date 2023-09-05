@@ -1,0 +1,2856 @@
+
+R version 4.3.1 (2023-06-16) -- "Beagle Scouts"
+Copyright (C) 2023 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> ############################################################################## 80
+> ## Multi-phase decision making
+> ## Version: 1.0
+> ## Authors: Yi-Shin Lin (y.s.lin@leeds.ac.uk)
+> ## Date: 2022, Jan, 28
+> ## License: GPL
+> ## Description: A hierarchical Bayesian UM model
+> pkg <- c("data.table", "ggplot2", "rstan", "rethinking", "dplyr", "pedxing")
+> sapply(pkg, require, character.only = TRUE)
+Loading required package: data.table
+Loading required package: ggplot2
+Loading required package: rstan
+Loading required package: StanHeaders
+rstan (Version 2.21.8, GitRev: 2e1f913d3ca3)
+For execution on a local, multicore CPU with excess RAM we recommend calling
+options(mc.cores = parallel::detectCores()).
+To avoid recompilation of unchanged Stan programs, we recommend calling
+rstan_options(auto_write = TRUE)
+Loading required package: rethinking
+Loading required package: parallel
+rethinking (Version 1.59)
+Loading required package: dplyr
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:data.table’:
+
+    between, first, last
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+Loading required package: pedxing
+data.table    ggplot2      rstan rethinking      dplyr    pedxing 
+      TRUE       TRUE       TRUE       TRUE       TRUE       TRUE 
+> win_path <- "D:/03_Projects/pedxing"
+> unix_path <- "/media/yslin/kea/03_Projects/pedxing"
+> wk <- ifelse(.Platform$OS.type == "windows",
++   shortPathName(win_path), unix_path
++ )
+> 
+> 
+> setwd(wk)
+> options(digits = 4)
+> rm(list = ls())
+> 
+> # Pre-car proportion | safe  ------------------
+> load("tests/extdata/mid-stage/proportion_rt_eeg.rda")
+> data <- data.frame(dp_be)
+> 
+> m0 <- map2stan(
++   alist(
++     count ~ dbinom(total, p),
++     logit(p) <- a[s],
++     a[s] ~ dnorm(0, 10)
++   ),
++   data = data, chain = 4, iter = 3000, warmup = 1500, cores = 4
++ )
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 1.5e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.15 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 1.4e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.14 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 3).
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 4).
+Chain 3: 
+Chain 3: Gradient evaluation took 1.4e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.14 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 3000 [  0%]  (Warmup)
+Chain 4: 
+Chain 4: Gradient evaluation took 1.4e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.14 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 3000 [  0%]  (Warmup)
+Chain 1: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 4: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 3: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 1: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 2: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 3: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 4: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 1: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 2: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 3: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 4: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 1: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 4: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 2: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 3: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 1: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 2: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 3: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 4: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 1: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 2: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 3: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 4: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 1: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 2: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 1: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.10522 seconds (Warm-up)
+Chain 1:                0.103129 seconds (Sampling)
+Chain 1:                0.208349 seconds (Total)
+Chain 1: 
+Chain 2: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.104806 seconds (Warm-up)
+Chain 2:                0.10363 seconds (Sampling)
+Chain 2:                0.208436 seconds (Total)
+Chain 2: 
+Chain 3: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 0.105979 seconds (Warm-up)
+Chain 3:                0.103076 seconds (Sampling)
+Chain 3:                0.209055 seconds (Total)
+Chain 3: 
+Chain 4: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 0.105736 seconds (Warm-up)
+Chain 4:                0.102969 seconds (Sampling)
+Chain 4:                0.208705 seconds (Total)
+Chain 4: 
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 1.3e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.13 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: WARNING: No variance estimation is
+Chain 1:          performed for num_warmup < 20
+Chain 1: 
+Chain 1: Iteration: 1 / 1 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 1e-06 seconds (Warm-up)
+Chain 1:                5.2e-05 seconds (Sampling)
+Chain 1:                5.3e-05 seconds (Total)
+Chain 1: 
+Computing WAIC
+Constructing posterior predictions
+[ 600 / 6000 ][ 1200 / 6000 ][ 1800 / 6000 ][ 2400 / 6000 ][ 3000 / 6000 ][ 3600 / 6000 ][ 4200 / 6000 ][ 4800 / 6000 ][ 5400 / 6000 ][ 6000 / 6000 ]
+Aggregated binomial counts detected. Splitting to 0/1 outcome for WAIC calculation.
+Warning messages:
+1: There were 1 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them. 
+2: Examine the pairs() plot to diagnose sampling problems
+ 
+> 
+> m1 <- map2stan(
++   alist(
++     count ~ dbinom(total, p),
++     logit(p) <- a[s] + b1 * TTAint,
++     a[s] ~ dnorm(0, 10),
++     b1 ~ dnorm(0, 10)
++   ),
++   data = data, iter = 3000, warmup = 1500, chain = 4, cores = 4
++ )
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 2.9e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.29 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 3.6e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.36 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 4.3e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.43 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 2.9e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.29 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 3000 [  0%]  (Warmup)
+Chain 1: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 3: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 4: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 1: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 2: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 3: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 4: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 2: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 1: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 3: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 4: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 2: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 4: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 2: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 3: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 1: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 2: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 3: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 4: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 1: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 2: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 3: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 4: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 1: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 2: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 1: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.294038 seconds (Warm-up)
+Chain 1:                0.31054 seconds (Sampling)
+Chain 1:                0.604578 seconds (Total)
+Chain 1: 
+Chain 2: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.284116 seconds (Warm-up)
+Chain 2:                0.315701 seconds (Sampling)
+Chain 2:                0.599817 seconds (Total)
+Chain 2: 
+Chain 3: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 0.29016 seconds (Warm-up)
+Chain 3:                0.312077 seconds (Sampling)
+Chain 3:                0.602237 seconds (Total)
+Chain 3: 
+Chain 4: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 0.289538 seconds (Warm-up)
+Chain 4:                0.320378 seconds (Sampling)
+Chain 4:                0.609916 seconds (Total)
+Chain 4: 
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 1.9e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.19 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: WARNING: No variance estimation is
+Chain 1:          performed for num_warmup < 20
+Chain 1: 
+Chain 1: Iteration: 1 / 1 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 1e-06 seconds (Warm-up)
+Chain 1:                6.2e-05 seconds (Sampling)
+Chain 1:                6.3e-05 seconds (Total)
+Chain 1: 
+Computing WAIC
+Constructing posterior predictions
+[ 600 / 6000 ][ 1200 / 6000 ][ 1800 / 6000 ][ 2400 / 6000 ][ 3000 / 6000 ][ 3600 / 6000 ][ 4200 / 6000 ][ 4800 / 6000 ][ 5400 / 6000 ][ 6000 / 6000 ]
+Aggregated binomial counts detected. Splitting to 0/1 outcome for WAIC calculation.
+Warning messages:
+1: There were 1 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them. 
+2: Examine the pairs() plot to diagnose sampling problems
+ 
+> 
+> m2 <- map2stan(
++   alist(
++     count ~ dbinom(total, p),
++     logit(p) <- a[s] + b2 * side,
++     a[s] ~ dnorm(0, 10),
++     b2 ~ dnorm(0, 10)
++   ),
++   data = data, iter = 3000, warmup = 1500, chain = 4, cores = 4
++ )
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 2.7e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.27 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 2.6e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.26 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 3e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.3 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 2.9e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.29 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 3000 [  0%]  (Warmup)
+Chain 1: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 3: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 1: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 4: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 2: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 3: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 1: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 4: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 2: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 3: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 1: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 4: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 2: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 3: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 1: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 4: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 2: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 3: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 1: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 4: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 2: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 3: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 1: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 2: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 1: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.176162 seconds (Warm-up)
+Chain 1:                0.155122 seconds (Sampling)
+Chain 1:                0.331284 seconds (Total)
+Chain 1: 
+Chain 4: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 2: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.171819 seconds (Warm-up)
+Chain 2:                0.154128 seconds (Sampling)
+Chain 2:                0.325947 seconds (Total)
+Chain 2: 
+Chain 3: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 0.179655 seconds (Warm-up)
+Chain 3:                0.155848 seconds (Sampling)
+Chain 3:                0.335503 seconds (Total)
+Chain 3: 
+Chain 4: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 0.175284 seconds (Warm-up)
+Chain 4:                0.154397 seconds (Sampling)
+Chain 4:                0.329681 seconds (Total)
+Chain 4: 
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 1.7e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.17 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: WARNING: No variance estimation is
+Chain 1:          performed for num_warmup < 20
+Chain 1: 
+Chain 1: Iteration: 1 / 1 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0 seconds (Warm-up)
+Chain 1:                5.6e-05 seconds (Sampling)
+Chain 1:                5.6e-05 seconds (Total)
+Chain 1: 
+Computing WAIC
+Constructing posterior predictions
+[ 600 / 6000 ][ 1200 / 6000 ][ 1800 / 6000 ][ 2400 / 6000 ][ 3000 / 6000 ][ 3600 / 6000 ][ 4200 / 6000 ][ 4800 / 6000 ][ 5400 / 6000 ][ 6000 / 6000 ]
+Aggregated binomial counts detected. Splitting to 0/1 outcome for WAIC calculation.
+Warning messages:
+1: There were 1 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them. 
+2: Examine the pairs() plot to diagnose sampling problems
+ 
+> 
+> m3 <- map2stan(
++   alist(
++     count ~ dbinom(total, p),
++     logit(p) <- a[s] + b1 * TTAint + b2 * side,
++     a[s] ~ dnorm(0, 10),
++     b1 ~ dnorm(0, 10),
++     b2 ~ dnorm(0, 10)
++   ),
++   data = data, iter = 3000, warmup = 1500, chain = 4, cores = 4
++ )
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 4.3e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.43 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 4.1e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.41 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 4.3e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.43 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 4.4e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.44 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 3000 [  0%]  (Warmup)
+Chain 1: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 3: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 4: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 1: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 2: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 3: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 4: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 1: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 2: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 3: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 4: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 1: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 4: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 2: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 3: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 2: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 1: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 3: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 4: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 2: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 1: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 3: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 4: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 2: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 1: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 2: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.394684 seconds (Warm-up)
+Chain 2:                0.416293 seconds (Sampling)
+Chain 2:                0.810977 seconds (Total)
+Chain 2: 
+Chain 1: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.406565 seconds (Warm-up)
+Chain 1:                0.432854 seconds (Sampling)
+Chain 1:                0.839419 seconds (Total)
+Chain 1: 
+Chain 3: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 0.388025 seconds (Warm-up)
+Chain 3:                0.432981 seconds (Sampling)
+Chain 3:                0.821006 seconds (Total)
+Chain 3: 
+Chain 4: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 0.376368 seconds (Warm-up)
+Chain 4:                0.435345 seconds (Sampling)
+Chain 4:                0.811713 seconds (Total)
+Chain 4: 
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 2.5e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.25 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: WARNING: No variance estimation is
+Chain 1:          performed for num_warmup < 20
+Chain 1: 
+Chain 1: Iteration: 1 / 1 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0 seconds (Warm-up)
+Chain 1:                6.8e-05 seconds (Sampling)
+Chain 1:                6.8e-05 seconds (Total)
+Chain 1: 
+Computing WAIC
+Constructing posterior predictions
+[ 600 / 6000 ][ 1200 / 6000 ][ 1800 / 6000 ][ 2400 / 6000 ][ 3000 / 6000 ][ 3600 / 6000 ][ 4200 / 6000 ][ 4800 / 6000 ][ 5400 / 6000 ][ 6000 / 6000 ]
+Aggregated binomial counts detected. Splitting to 0/1 outcome for WAIC calculation.
+Warning messages:
+1: There were 1 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them. 
+2: Examine the pairs() plot to diagnose sampling problems
+ 
+> 
+> m4 <- map2stan(
++   alist(
++     count ~ dbinom(total, p),
++     logit(p) <- a[s] + b1 * TTAint + b2 * side + b3 * TTAint * side,
++     a[s] ~ dnorm(0, 10),
++     b1 ~ dnorm(0, 10),
++     b2 ~ dnorm(0, 10),
++     b3 ~ dnorm(0, 10)
++   ),
++   data = data, iter = 3000, warmup = 1500, chain = 4, cores = 4
++ )
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 7.4e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.74 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 6.9e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.69 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 7.3e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.73 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 6.8e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.68 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 3000 [  0%]  (Warmup)
+Chain 1: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 4: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 3: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 1: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 4: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 2: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 3: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 1: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 4: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 2: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 3: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 1: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 4: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 1: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 2: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 3: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 4: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 1: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 2: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 3: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 4: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 1: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 2: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 4: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 1: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 2: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 4: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 0.838383 seconds (Warm-up)
+Chain 4:                0.776303 seconds (Sampling)
+Chain 4:                1.61469 seconds (Total)
+Chain 4: 
+Chain 3: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 1: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.850366 seconds (Warm-up)
+Chain 1:                0.928724 seconds (Sampling)
+Chain 1:                1.77909 seconds (Total)
+Chain 1: 
+Chain 2: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.907784 seconds (Warm-up)
+Chain 2:                0.881951 seconds (Sampling)
+Chain 2:                1.78974 seconds (Total)
+Chain 2: 
+Chain 3: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 0.907545 seconds (Warm-up)
+Chain 3:                0.925721 seconds (Sampling)
+Chain 3:                1.83327 seconds (Total)
+Chain 3: 
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 4.5e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.45 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: WARNING: No variance estimation is
+Chain 1:          performed for num_warmup < 20
+Chain 1: 
+Chain 1: Iteration: 1 / 1 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 1e-06 seconds (Warm-up)
+Chain 1:                9e-05 seconds (Sampling)
+Chain 1:                9.1e-05 seconds (Total)
+Chain 1: 
+Computing WAIC
+Constructing posterior predictions
+[ 600 / 6000 ][ 1200 / 6000 ][ 1800 / 6000 ][ 2400 / 6000 ][ 3000 / 6000 ][ 3600 / 6000 ][ 4200 / 6000 ][ 4800 / 6000 ][ 5400 / 6000 ][ 6000 / 6000 ]
+Aggregated binomial counts detected. Splitting to 0/1 outcome for WAIC calculation.
+Warning messages:
+1: There were 1 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them. 
+2: Examine the pairs() plot to diagnose sampling problems
+ 
+> 
+> save(m0, m1, m2, m3, m4, file = "tests/extdata/mid-stage/precar_given_safe_eeg.RData")
+> 
+> # Post-car proportion | safe  ------------------
+> data <- data.frame(dp_af)
+> m0 <- map2stan(
++   alist(
++     count ~ dbinom(total, p),
++     logit(p) <- a[s],
++     a[s] ~ dnorm(0, 10)
++   ),
++   data = data, chain = 4, iter = 3000, warmup = 1500, cores = 4
++ )
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 3.2e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.32 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 2.9e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.29 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 3000 [  0%]  (Warmup)
+Chain 1: Iteration:  300 / 3000 [ 10%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 3e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.3 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 3000 [  0%]  (Warmup)
+Chain 2: Iteration:  300 / 3000 [ 10%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 2.9e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.29 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 3000 [  0%]  (Warmup)
+Chain 1: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 3: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 2: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 4: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 1: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 3: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 2: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 4: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 1: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 3: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 2: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 4: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 1: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 3: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 1: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 3: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 2: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 4: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 1: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 3: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 2: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 4: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 1: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 2: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 1: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.124518 seconds (Warm-up)
+Chain 1:                0.125369 seconds (Sampling)
+Chain 1:                0.249887 seconds (Total)
+Chain 1: 
+Chain 3: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 2: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.126209 seconds (Warm-up)
+Chain 2:                0.124912 seconds (Sampling)
+Chain 2:                0.251121 seconds (Total)
+Chain 2: 
+Chain 4: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 3: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 0.132684 seconds (Warm-up)
+Chain 3:                0.12658 seconds (Sampling)
+Chain 3:                0.259264 seconds (Total)
+Chain 3: 
+Chain 4: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 0.127567 seconds (Warm-up)
+Chain 4:                0.124667 seconds (Sampling)
+Chain 4:                0.252234 seconds (Total)
+Chain 4: 
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 1.5e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.15 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: WARNING: No variance estimation is
+Chain 1:          performed for num_warmup < 20
+Chain 1: 
+Chain 1: Iteration: 1 / 1 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 1e-06 seconds (Warm-up)
+Chain 1:                5.6e-05 seconds (Sampling)
+Chain 1:                5.7e-05 seconds (Total)
+Chain 1: 
+Computing WAIC
+Constructing posterior predictions
+[ 600 / 6000 ][ 1200 / 6000 ][ 1800 / 6000 ][ 2400 / 6000 ][ 3000 / 6000 ][ 3600 / 6000 ][ 4200 / 6000 ][ 4800 / 6000 ][ 5400 / 6000 ][ 6000 / 6000 ]
+Aggregated binomial counts detected. Splitting to 0/1 outcome for WAIC calculation.
+Warning messages:
+1: There were 1 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them. 
+2: Examine the pairs() plot to diagnose sampling problems
+ 
+> 
+> m1 <- map2stan(
++   alist(
++     count ~ dbinom(total, p),
++     logit(p) <- a[s] + b1 * TTAint,
++     a[s] ~ dnorm(0, 10),
++     b1 ~ dnorm(0, 10)
++   ),
++   data = data, iter = 3000, warmup = 1500, chain = 4, cores = 4
++ )
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 3.4e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.34 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 3.4e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.34 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 3.5e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.35 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 3.8e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.38 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 3000 [  0%]  (Warmup)
+Chain 1: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 3: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 1: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 4: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 2: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 1: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 3: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 4: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 2: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 1: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 3: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 2: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 4: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 1: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 4: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 2: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 2: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 3: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 1: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 2: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 4: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 3: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 1: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 2: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 3: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 2: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.30252 seconds (Warm-up)
+Chain 2:                0.225989 seconds (Sampling)
+Chain 2:                0.528509 seconds (Total)
+Chain 2: 
+Chain 4: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 1: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 4: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 0.320766 seconds (Warm-up)
+Chain 4:                0.243094 seconds (Sampling)
+Chain 4:                0.56386 seconds (Total)
+Chain 4: 
+Chain 1: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.294721 seconds (Warm-up)
+Chain 1:                0.342587 seconds (Sampling)
+Chain 1:                0.637308 seconds (Total)
+Chain 1: 
+Chain 3: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 0.322052 seconds (Warm-up)
+Chain 3:                0.307582 seconds (Sampling)
+Chain 3:                0.629634 seconds (Total)
+Chain 3: 
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 2.5e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.25 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: WARNING: No variance estimation is
+Chain 1:          performed for num_warmup < 20
+Chain 1: 
+Chain 1: Iteration: 1 / 1 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 1e-06 seconds (Warm-up)
+Chain 1:                6.9e-05 seconds (Sampling)
+Chain 1:                7e-05 seconds (Total)
+Chain 1: 
+Computing WAIC
+Constructing posterior predictions
+[ 600 / 6000 ][ 1200 / 6000 ][ 1800 / 6000 ][ 2400 / 6000 ][ 3000 / 6000 ][ 3600 / 6000 ][ 4200 / 6000 ][ 4800 / 6000 ][ 5400 / 6000 ][ 6000 / 6000 ]
+Aggregated binomial counts detected. Splitting to 0/1 outcome for WAIC calculation.
+Warning messages:
+1: There were 1 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them. 
+2: Examine the pairs() plot to diagnose sampling problems
+ 
+> 
+> m2 <- map2stan(
++   alist(
++     count ~ dbinom(total, p),
++     logit(p) <- a[s] + b2 * side,
++     a[s] ~ dnorm(0, 10),
++     b2 ~ dnorm(0, 10)
++   ),
++   data = data, iter = 3000, warmup = 1500, chain = 4, cores = 4
++ )
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 3.7e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.37 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 3.8e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.38 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 3.7e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.37 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 4.1e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.41 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 3000 [  0%]  (Warmup)
+Chain 1: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 3: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 1: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 4: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 2: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 1: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 3: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 2: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 4: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 1: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 3: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 2: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 4: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 3: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 3: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 1: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 3: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 2: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 4: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 1: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 3: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 2: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 4: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 1: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 2: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 1: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.206606 seconds (Warm-up)
+Chain 1:                0.186616 seconds (Sampling)
+Chain 1:                0.393222 seconds (Total)
+Chain 1: 
+Chain 3: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 2: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.205584 seconds (Warm-up)
+Chain 2:                0.186608 seconds (Sampling)
+Chain 2:                0.392192 seconds (Total)
+Chain 2: 
+Chain 4: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 3: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 0.211672 seconds (Warm-up)
+Chain 3:                0.187283 seconds (Sampling)
+Chain 3:                0.398955 seconds (Total)
+Chain 3: 
+Chain 4: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 0.213203 seconds (Warm-up)
+Chain 4:                0.186677 seconds (Sampling)
+Chain 4:                0.39988 seconds (Total)
+Chain 4: 
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 2.2e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.22 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: WARNING: No variance estimation is
+Chain 1:          performed for num_warmup < 20
+Chain 1: 
+Chain 1: Iteration: 1 / 1 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 1e-06 seconds (Warm-up)
+Chain 1:                6.6e-05 seconds (Sampling)
+Chain 1:                6.7e-05 seconds (Total)
+Chain 1: 
+Computing WAIC
+Constructing posterior predictions
+[ 600 / 6000 ][ 1200 / 6000 ][ 1800 / 6000 ][ 2400 / 6000 ][ 3000 / 6000 ][ 3600 / 6000 ][ 4200 / 6000 ][ 4800 / 6000 ][ 5400 / 6000 ][ 6000 / 6000 ]
+Aggregated binomial counts detected. Splitting to 0/1 outcome for WAIC calculation.
+Warning messages:
+1: There were 1 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them. 
+2: Examine the pairs() plot to diagnose sampling problems
+ 
+> 
+> m3 <- map2stan(
++   alist(
++     count ~ dbinom(total, p),
++     logit(p) <- a[s] + b1 * TTAint + b2 * side,
++     a[s] ~ dnorm(0, 10),
++     b1 ~ dnorm(0, 10),
++     b2 ~ dnorm(0, 10)
++   ),
++   data = data, iter = 3000, warmup = 1500, chain = 4, cores = 4
++ )
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 5.3e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.53 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 6.2e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.62 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 5.3e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.53 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 5.3e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.53 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 3000 [  0%]  (Warmup)
+Chain 1: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 3: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 4: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 1: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 2: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 3: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 4: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 1: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 2: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 3: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 4: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 1: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 4: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 2: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 1: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 3: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 1: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 2: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 4: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 3: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 1: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 2: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 1: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.440258 seconds (Warm-up)
+Chain 1:                0.347421 seconds (Sampling)
+Chain 1:                0.787679 seconds (Total)
+Chain 1: 
+Chain 3: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 4: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 2: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 4: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 0.436636 seconds (Warm-up)
+Chain 4:                0.450803 seconds (Sampling)
+Chain 4:                0.887439 seconds (Total)
+Chain 4: 
+Chain 2: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.429393 seconds (Warm-up)
+Chain 2:                0.510425 seconds (Sampling)
+Chain 2:                0.939818 seconds (Total)
+Chain 2: 
+Chain 3: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 0.442545 seconds (Warm-up)
+Chain 3:                0.525794 seconds (Sampling)
+Chain 3:                0.968339 seconds (Total)
+Chain 3: 
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 3.1e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.31 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: WARNING: No variance estimation is
+Chain 1:          performed for num_warmup < 20
+Chain 1: 
+Chain 1: Iteration: 1 / 1 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0 seconds (Warm-up)
+Chain 1:                8.3e-05 seconds (Sampling)
+Chain 1:                8.3e-05 seconds (Total)
+Chain 1: 
+Computing WAIC
+Constructing posterior predictions
+[ 600 / 6000 ][ 1200 / 6000 ][ 1800 / 6000 ][ 2400 / 6000 ][ 3000 / 6000 ][ 3600 / 6000 ][ 4200 / 6000 ][ 4800 / 6000 ][ 5400 / 6000 ][ 6000 / 6000 ]
+Aggregated binomial counts detected. Splitting to 0/1 outcome for WAIC calculation.
+Warning messages:
+1: There were 1 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them. 
+2: Examine the pairs() plot to diagnose sampling problems
+ 
+> 
+> m4 <- map2stan(
++   alist(
++     count ~ dbinom(total, p),
++     logit(p) <- a[s] + b1 * TTAint + b2 * side + b3 * TTAint * side,
++     a[s] ~ dnorm(0, 10),
++     b1 ~ dnorm(0, 10),
++     b2 ~ dnorm(0, 10),
++     b3 ~ dnorm(0, 10)
++   ),
++   data = data, iter = 3000, warmup = 1500, chain = 4, cores = 4
++ )
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 9.7e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.97 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 9e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.9 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 9.1e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.91 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 9e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.9 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 3000 [  0%]  (Warmup)
+Chain 1: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 4: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 3: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 1: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 3: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 4: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 2: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 1: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 3: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 4: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 2: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 1: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 4: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 3: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 2: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 1: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 4: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 3: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 2: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 1: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 4: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 3: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 2: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 1: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 2: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 1: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.998476 seconds (Warm-up)
+Chain 1:                0.86688 seconds (Sampling)
+Chain 1:                1.86536 seconds (Total)
+Chain 1: 
+Chain 4: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 0.998087 seconds (Warm-up)
+Chain 4:                0.863636 seconds (Sampling)
+Chain 4:                1.86172 seconds (Total)
+Chain 4: 
+Chain 3: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 1.02534 seconds (Warm-up)
+Chain 3:                0.857634 seconds (Sampling)
+Chain 3:                1.88298 seconds (Total)
+Chain 3: 
+Chain 2: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 1.05986 seconds (Warm-up)
+Chain 2:                0.862785 seconds (Sampling)
+Chain 2:                1.92264 seconds (Total)
+Chain 2: 
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 4.8e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.48 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: WARNING: No variance estimation is
+Chain 1:          performed for num_warmup < 20
+Chain 1: 
+Chain 1: Iteration: 1 / 1 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 1e-06 seconds (Warm-up)
+Chain 1:                0.000112 seconds (Sampling)
+Chain 1:                0.000113 seconds (Total)
+Chain 1: 
+Computing WAIC
+Constructing posterior predictions
+[ 600 / 6000 ][ 1200 / 6000 ][ 1800 / 6000 ][ 2400 / 6000 ][ 3000 / 6000 ][ 3600 / 6000 ][ 4200 / 6000 ][ 4800 / 6000 ][ 5400 / 6000 ][ 6000 / 6000 ]
+Aggregated binomial counts detected. Splitting to 0/1 outcome for WAIC calculation.
+Warning messages:
+1: There were 1 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them. 
+2: Examine the pairs() plot to diagnose sampling problems
+ 
+> 
+> save(m0, m1, m2, m3, m4, file = "tests/extdata/mid-stage/postcar_given_safe_eeg.RData")
+> 
+> # Safe proportion | pre-car  ------------------
+> data <- data.frame(dsafe_be)
+> 
+> m0 <- map2stan(
++   alist(
++     count ~ dbinom(total, p),
++     logit(p) <- a[s],
++     a[s] ~ dnorm(0, 10)
++   ),
++   data = data, chain = 4, iter = 3000, warmup = 1500, cores = 4
++ )
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 3.6e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.36 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 3.6e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.36 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 3.4e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.34 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 3.3e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.33 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 3000 [  0%]  (Warmup)
+Chain 1: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 3: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 1: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 2: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 4: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 3: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 1: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 2: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 4: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 3: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 1: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 4: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 3: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 1: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 2: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 3: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 1: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 4: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 2: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 1: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 3: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 4: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 2: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 1: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 4: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 2: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.180444 seconds (Warm-up)
+Chain 2:                0.162962 seconds (Sampling)
+Chain 2:                0.343406 seconds (Total)
+Chain 2: 
+Chain 1: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.201307 seconds (Warm-up)
+Chain 1:                0.167796 seconds (Sampling)
+Chain 1:                0.369103 seconds (Total)
+Chain 1: 
+Chain 3: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 3: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 0.192507 seconds (Warm-up)
+Chain 3:                0.187203 seconds (Sampling)
+Chain 3:                0.37971 seconds (Total)
+Chain 3: 
+Chain 4: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 0.194978 seconds (Warm-up)
+Chain 4:                0.17873 seconds (Sampling)
+Chain 4:                0.373708 seconds (Total)
+Chain 4: 
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 1.7e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.17 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: WARNING: No variance estimation is
+Chain 1:          performed for num_warmup < 20
+Chain 1: 
+Chain 1: Iteration: 1 / 1 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 1e-06 seconds (Warm-up)
+Chain 1:                4.8e-05 seconds (Sampling)
+Chain 1:                4.9e-05 seconds (Total)
+Chain 1: 
+Computing WAIC
+Constructing posterior predictions
+[ 600 / 6000 ][ 1200 / 6000 ][ 1800 / 6000 ][ 2400 / 6000 ][ 3000 / 6000 ][ 3600 / 6000 ][ 4200 / 6000 ][ 4800 / 6000 ][ 5400 / 6000 ][ 6000 / 6000 ]
+Aggregated binomial counts detected. Splitting to 0/1 outcome for WAIC calculation.
+Warning messages:
+1: There were 4 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them. 
+2: Examine the pairs() plot to diagnose sampling problems
+ 
+3: In map2stan(alist(count ~ dbinom(total, p), logit(p) <- a[s], a[s] ~  :
+  There were 4 divergent iterations during sampling.
+Check the chains (trace plots, n_eff, Rhat) carefully to ensure they are valid.
+> 
+> m1 <- map2stan(
++   alist(
++     count ~ dbinom(total, p),
++     logit(p) <- a[s] + b1 * TTAint,
++     a[s] ~ dnorm(0, 10),
++     b1 ~ dnorm(0, 10)
++   ),
++   data = data, iter = 3000, warmup = 1500, chain = 4, cores = 4
++ )
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 3.5e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.35 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 3.1e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.31 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 3.2e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.32 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 3.2e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.32 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 3000 [  0%]  (Warmup)
+Chain 1: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 3: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 4: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 1: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 2: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 3: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 4: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 1: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 2: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 3: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 4: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 1: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 4: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 3: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 2: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 1: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 3: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 2: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 4: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 1: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 3: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 2: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 4: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 1: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 2: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 1: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.395053 seconds (Warm-up)
+Chain 1:                0.310502 seconds (Sampling)
+Chain 1:                0.705555 seconds (Total)
+Chain 1: 
+Chain 3: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 0.368559 seconds (Warm-up)
+Chain 3:                0.31302 seconds (Sampling)
+Chain 3:                0.681579 seconds (Total)
+Chain 3: 
+Chain 2: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.387544 seconds (Warm-up)
+Chain 2:                0.313965 seconds (Sampling)
+Chain 2:                0.701509 seconds (Total)
+Chain 2: 
+Chain 4: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 0.380021 seconds (Warm-up)
+Chain 4:                0.312864 seconds (Sampling)
+Chain 4:                0.692885 seconds (Total)
+Chain 4: 
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 2.1e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.21 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: WARNING: No variance estimation is
+Chain 1:          performed for num_warmup < 20
+Chain 1: 
+Chain 1: Iteration: 1 / 1 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 1e-06 seconds (Warm-up)
+Chain 1:                5.6e-05 seconds (Sampling)
+Chain 1:                5.7e-05 seconds (Total)
+Chain 1: 
+Computing WAIC
+Constructing posterior predictions
+[ 600 / 6000 ][ 1200 / 6000 ][ 1800 / 6000 ][ 2400 / 6000 ][ 3000 / 6000 ][ 3600 / 6000 ][ 4200 / 6000 ][ 4800 / 6000 ][ 5400 / 6000 ][ 6000 / 6000 ]
+Aggregated binomial counts detected. Splitting to 0/1 outcome for WAIC calculation.
+Warning messages:
+1: There were 1 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them. 
+2: Examine the pairs() plot to diagnose sampling problems
+ 
+> 
+> m2 <- map2stan(
++   alist(
++     count ~ dbinom(total, p),
++     logit(p) <- a[s] + b2 * side,
++     a[s] ~ dnorm(0, 10),
++     b2 ~ dnorm(0, 10)
++   ),
++   data = data, iter = 3000, warmup = 1500, chain = 4, cores = 4
++ )
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 3.1e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.31 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 3.1e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.31 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 3.1e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.31 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 3e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.3 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 3000 [  0%]  (Warmup)
+Chain 1: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 3: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 4: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 1: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 2: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 3: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 4: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 2: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 1: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 3: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 4: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 2: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 4: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 1: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 3: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 2: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 1: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 3: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 4: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 2: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 1: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 3: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 4: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 2: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 1: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 2: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.30425 seconds (Warm-up)
+Chain 2:                0.268902 seconds (Sampling)
+Chain 2:                0.573152 seconds (Total)
+Chain 2: 
+Chain 1: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.32652 seconds (Warm-up)
+Chain 1:                0.267203 seconds (Sampling)
+Chain 1:                0.593723 seconds (Total)
+Chain 1: 
+Chain 3: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 0.309064 seconds (Warm-up)
+Chain 3:                0.268359 seconds (Sampling)
+Chain 3:                0.577423 seconds (Total)
+Chain 3: 
+Chain 4: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 0.297313 seconds (Warm-up)
+Chain 4:                0.26599 seconds (Sampling)
+Chain 4:                0.563303 seconds (Total)
+Chain 4: 
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 1.9e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.19 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: WARNING: No variance estimation is
+Chain 1:          performed for num_warmup < 20
+Chain 1: 
+Chain 1: Iteration: 1 / 1 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0 seconds (Warm-up)
+Chain 1:                5.4e-05 seconds (Sampling)
+Chain 1:                5.4e-05 seconds (Total)
+Chain 1: 
+Computing WAIC
+Constructing posterior predictions
+[ 600 / 6000 ][ 1200 / 6000 ][ 1800 / 6000 ][ 2400 / 6000 ][ 3000 / 6000 ][ 3600 / 6000 ][ 4200 / 6000 ][ 4800 / 6000 ][ 5400 / 6000 ][ 6000 / 6000 ]
+Aggregated binomial counts detected. Splitting to 0/1 outcome for WAIC calculation.
+Warning messages:
+1: There were 3 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them. 
+2: Examine the pairs() plot to diagnose sampling problems
+ 
+3: There were 1 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them. 
+4: Examine the pairs() plot to diagnose sampling problems
+ 
+5: In map2stan(alist(count ~ dbinom(total, p), logit(p) <- a[s] + b2 *  :
+  There were 3 divergent iterations during sampling.
+Check the chains (trace plots, n_eff, Rhat) carefully to ensure they are valid.
+> 
+> m3 <- map2stan(
++   alist(
++     count ~ dbinom(total, p),
++     logit(p) <- a[s] + b1 * TTAint + b2 * side,
++     a[s] ~ dnorm(0, 10),
++     b1 ~ dnorm(0, 10),
++     b2 ~ dnorm(0, 10)
++   ),
++   data = data, iter = 3000, warmup = 1500, chain = 4, cores = 4
++ )
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 3.9e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.39 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 3.8e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.38 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 3.7e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.37 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 3.7e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.37 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 3000 [  0%]  (Warmup)
+Chain 1: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 3: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 4: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 1: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 2: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 3: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 4: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 1: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 2: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 3: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 4: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 1: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 4: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 2: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 3: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 1: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 2: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 3: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 4: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 1: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 2: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 3: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 4: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 1: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 2: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 1: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.539527 seconds (Warm-up)
+Chain 1:                0.420218 seconds (Sampling)
+Chain 1:                0.959745 seconds (Total)
+Chain 1: 
+Chain 2: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.537089 seconds (Warm-up)
+Chain 2:                0.429731 seconds (Sampling)
+Chain 2:                0.96682 seconds (Total)
+Chain 2: 
+Chain 3: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 0.56468 seconds (Warm-up)
+Chain 3:                0.419697 seconds (Sampling)
+Chain 3:                0.984377 seconds (Total)
+Chain 3: 
+Chain 4: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 0.550558 seconds (Warm-up)
+Chain 4:                0.421356 seconds (Sampling)
+Chain 4:                0.971914 seconds (Total)
+Chain 4: 
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 2.8e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.28 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: WARNING: No variance estimation is
+Chain 1:          performed for num_warmup < 20
+Chain 1: 
+Chain 1: Iteration: 1 / 1 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0 seconds (Warm-up)
+Chain 1:                6.6e-05 seconds (Sampling)
+Chain 1:                6.6e-05 seconds (Total)
+Chain 1: 
+Computing WAIC
+Constructing posterior predictions
+[ 600 / 6000 ][ 1200 / 6000 ][ 1800 / 6000 ][ 2400 / 6000 ][ 3000 / 6000 ][ 3600 / 6000 ][ 4200 / 6000 ][ 4800 / 6000 ][ 5400 / 6000 ][ 6000 / 6000 ]
+Aggregated binomial counts detected. Splitting to 0/1 outcome for WAIC calculation.
+Warning messages:
+1: There were 1 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them. 
+2: Examine the pairs() plot to diagnose sampling problems
+ 
+3: There were 1 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them. 
+4: Examine the pairs() plot to diagnose sampling problems
+ 
+5: In map2stan(alist(count ~ dbinom(total, p), logit(p) <- a[s] + b1 *  :
+  There were 1 divergent iterations during sampling.
+Check the chains (trace plots, n_eff, Rhat) carefully to ensure they are valid.
+> 
+> m4 <- map2stan(
++   alist(
++     count ~ dbinom(total, p),
++     logit(p) <- a[s] + b1 * TTAint + b2 * side + b3 * TTAint * side,
++     a[s] ~ dnorm(0, 10),
++     b1 ~ dnorm(0, 10),
++     b2 ~ dnorm(0, 10),
++     b3 ~ dnorm(0, 10)
++   ),
++   data = data, iter = 3000, warmup = 1500, chain = 4, cores = 4
++ )
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 6.5e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.65 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 6.4e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.64 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 5.9e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.59 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 5.6e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.56 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 3000 [  0%]  (Warmup)
+Chain 3: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 1: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 4: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 3: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 1: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 2: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 4: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 3: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 2: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 1: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 4: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 3: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 4: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 1: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 2: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 3: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 1: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 2: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 4: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 3: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 1: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 2: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 4: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 3: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 1: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 2: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 3: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 1.03983 seconds (Warm-up)
+Chain 3:                1.18474 seconds (Sampling)
+Chain 3:                2.22457 seconds (Total)
+Chain 3: 
+Chain 1: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 1.07017 seconds (Warm-up)
+Chain 1:                1.20802 seconds (Sampling)
+Chain 1:                2.27819 seconds (Total)
+Chain 1: 
+Chain 2: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 1.06397 seconds (Warm-up)
+Chain 2:                1.21416 seconds (Sampling)
+Chain 2:                2.27813 seconds (Total)
+Chain 2: 
+Chain 4: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 1.05543 seconds (Warm-up)
+Chain 4:                1.22544 seconds (Sampling)
+Chain 4:                2.28087 seconds (Total)
+Chain 4: 
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 3.7e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.37 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: WARNING: No variance estimation is
+Chain 1:          performed for num_warmup < 20
+Chain 1: 
+Chain 1: Iteration: 1 / 1 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0 seconds (Warm-up)
+Chain 1:                9e-05 seconds (Sampling)
+Chain 1:                9e-05 seconds (Total)
+Chain 1: 
+Computing WAIC
+Constructing posterior predictions
+[ 600 / 6000 ][ 1200 / 6000 ][ 1800 / 6000 ][ 2400 / 6000 ][ 3000 / 6000 ][ 3600 / 6000 ][ 4200 / 6000 ][ 4800 / 6000 ][ 5400 / 6000 ][ 6000 / 6000 ]
+Aggregated binomial counts detected. Splitting to 0/1 outcome for WAIC calculation.
+Warning messages:
+1: There were 1 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them. 
+2: Examine the pairs() plot to diagnose sampling problems
+ 
+> 
+> save(m0, m1, m2, m3, m4, file = "tests/extdata/mid-stage/safe_given_precar_eeg.RData")
+> 
+> # Safe proportion | post-car  ------------------
+> data <- data.frame(dsafe_af)
+> 
+> m0 <- map2stan(
++   alist(
++     count ~ dbinom(total, p),
++     logit(p) <- a[s],
++     a[s] ~ dnorm(0, 10)
++   ),
++   data = data, chain = 4, iter = 3000, warmup = 1500, cores = 4
++ )
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 2.2e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.22 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 2.1e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.21 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 2.1e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.21 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 2e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.2 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 3000 [  0%]  (Warmup)
+Chain 1: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 3: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 4: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 1: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 2: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 3: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 1: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 4: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 2: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 3: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 1: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 4: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 2: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 2: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 3: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 1: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 2: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 3: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 4: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 1: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 2: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 3: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 4: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 1: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 2: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 2: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 1: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.329016 seconds (Warm-up)
+Chain 2:                0.336608 seconds (Sampling)
+Chain 2:                0.665624 seconds (Total)
+Chain 2: 
+Chain 1: 
+Chain 1:  Elapsed Time: 0.320574 seconds (Warm-up)
+Chain 1:                0.362858 seconds (Sampling)
+Chain 1:                0.683432 seconds (Total)
+Chain 1: 
+Chain 3: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 0.316099 seconds (Warm-up)
+Chain 3:                0.369841 seconds (Sampling)
+Chain 3:                0.68594 seconds (Total)
+Chain 3: 
+Chain 4: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 0.333161 seconds (Warm-up)
+Chain 4:                0.367442 seconds (Sampling)
+Chain 4:                0.700603 seconds (Total)
+Chain 4: 
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 1.3e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.13 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: WARNING: No variance estimation is
+Chain 1:          performed for num_warmup < 20
+Chain 1: 
+Chain 1: Iteration: 1 / 1 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 1e-06 seconds (Warm-up)
+Chain 1:                0.000157 seconds (Sampling)
+Chain 1:                0.000158 seconds (Total)
+Chain 1: 
+Computing WAIC
+Constructing posterior predictions
+[ 600 / 6000 ][ 1200 / 6000 ][ 1800 / 6000 ][ 2400 / 6000 ][ 3000 / 6000 ][ 3600 / 6000 ][ 4200 / 6000 ][ 4800 / 6000 ][ 5400 / 6000 ][ 6000 / 6000 ]
+Aggregated binomial counts detected. Splitting to 0/1 outcome for WAIC calculation.
+> 
+> m1 <- map2stan(
++   alist(
++     count ~ dbinom(total, p),
++     logit(p) <- a[s] + b1 * TTAint,
++     a[s] ~ dnorm(0, 10),
++     b1 ~ dnorm(0, 10)
++   ),
++   data = data, iter = 3000, warmup = 1500, chain = 4, cores = 4
++ )
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 3.5e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.35 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 3.4e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.34 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 3.3e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.33 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 3.5e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.35 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 3000 [  0%]  (Warmup)
+Chain 2: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 1: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 4: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 3: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 2: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 1: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 4: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 3: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 2: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 1: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 4: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 3: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 2: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 4: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 1: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 3: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 2: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 1: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 4: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 3: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 2: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 4: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 1: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 3: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 2: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 1: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 2: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.66491 seconds (Warm-up)
+Chain 2:                0.698289 seconds (Sampling)
+Chain 2:                1.3632 seconds (Total)
+Chain 2: 
+Chain 4: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 0.702933 seconds (Warm-up)
+Chain 4:                0.660951 seconds (Sampling)
+Chain 4:                1.36388 seconds (Total)
+Chain 4: 
+Chain 1: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.731863 seconds (Warm-up)
+Chain 1:                0.708548 seconds (Sampling)
+Chain 1:                1.44041 seconds (Total)
+Chain 1: 
+Chain 3: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 0.742608 seconds (Warm-up)
+Chain 3:                0.721682 seconds (Sampling)
+Chain 3:                1.46429 seconds (Total)
+Chain 3: 
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 2.3e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.23 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: WARNING: No variance estimation is
+Chain 1:          performed for num_warmup < 20
+Chain 1: 
+Chain 1: Iteration: 1 / 1 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 1e-06 seconds (Warm-up)
+Chain 1:                5.9e-05 seconds (Sampling)
+Chain 1:                6e-05 seconds (Total)
+Chain 1: 
+Computing WAIC
+Constructing posterior predictions
+[ 600 / 6000 ][ 1200 / 6000 ][ 1800 / 6000 ][ 2400 / 6000 ][ 3000 / 6000 ][ 3600 / 6000 ][ 4200 / 6000 ][ 4800 / 6000 ][ 5400 / 6000 ][ 6000 / 6000 ]
+Aggregated binomial counts detected. Splitting to 0/1 outcome for WAIC calculation.
+Warning messages:
+1: There were 1 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them. 
+2: Examine the pairs() plot to diagnose sampling problems
+ 
+> 
+> m2 <- map2stan(
++   alist(
++     count ~ dbinom(total, p),
++     logit(p) <- a[s] + b2 * side,
++     a[s] ~ dnorm(0, 10),
++     b2 ~ dnorm(0, 10)
++   ),
++   data = data, iter = 3000, warmup = 1500, chain = 4, cores = 4
++ )
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 4e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.4 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 3.9e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.39 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 3.9e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.39 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 3.6e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.36 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 3000 [  0%]  (Warmup)
+Chain 1: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 3: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 4: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 1: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 2: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 3: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 4: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 1: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 2: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 3: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 4: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 1: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 4: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 1: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 3: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 2: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 1: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 3: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 4: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 2: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 1: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 3: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 2: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 1: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 2: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.536383 seconds (Warm-up)
+Chain 2:                0.502717 seconds (Sampling)
+Chain 2:                1.0391 seconds (Total)
+Chain 2: 
+Chain 4: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 1: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.551076 seconds (Warm-up)
+Chain 1:                0.617854 seconds (Sampling)
+Chain 1:                1.16893 seconds (Total)
+Chain 1: 
+Chain 3: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 0.544824 seconds (Warm-up)
+Chain 3:                0.591153 seconds (Sampling)
+Chain 3:                1.13598 seconds (Total)
+Chain 3: 
+Chain 4: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 0.551004 seconds (Warm-up)
+Chain 4:                0.614536 seconds (Sampling)
+Chain 4:                1.16554 seconds (Total)
+Chain 4: 
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 2.1e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.21 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: WARNING: No variance estimation is
+Chain 1:          performed for num_warmup < 20
+Chain 1: 
+Chain 1: Iteration: 1 / 1 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0 seconds (Warm-up)
+Chain 1:                0.000237 seconds (Sampling)
+Chain 1:                0.000237 seconds (Total)
+Chain 1: 
+Computing WAIC
+Constructing posterior predictions
+[ 600 / 6000 ][ 1200 / 6000 ][ 1800 / 6000 ][ 2400 / 6000 ][ 3000 / 6000 ][ 3600 / 6000 ][ 4200 / 6000 ][ 4800 / 6000 ][ 5400 / 6000 ][ 6000 / 6000 ]
+Aggregated binomial counts detected. Splitting to 0/1 outcome for WAIC calculation.
+> 
+> m3 <- map2stan(
++   alist(
++     count ~ dbinom(total, p),
++     logit(p) <- a[s] + b1 * TTAint + b2 * side,
++     a[s] ~ dnorm(0, 10),
++     b1 ~ dnorm(0, 10),
++     b2 ~ dnorm(0, 10)
++   ),
++   data = data, iter = 3000, warmup = 1500, chain = 4, cores = 4
++ )
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 5.2e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.52 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 4.5e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.45 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 4.5e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.45 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 4.6e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.46 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 3000 [  0%]  (Warmup)
+Chain 1: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 2: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 3: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 4: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 1: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 2: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 3: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 4: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 1: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 2: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 3: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 4: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 2: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 4: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 1: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 3: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 2: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 1: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 3: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 4: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 2: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 1: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 3: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 4: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 2: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 1: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 2: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 1.00317 seconds (Warm-up)
+Chain 2:                0.852169 seconds (Sampling)
+Chain 2:                1.85534 seconds (Total)
+Chain 2: 
+Chain 4: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 1: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 1.03348 seconds (Warm-up)
+Chain 1:                0.943332 seconds (Sampling)
+Chain 1:                1.97681 seconds (Total)
+Chain 1: 
+Chain 3: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 1.01018 seconds (Warm-up)
+Chain 3:                1.01474 seconds (Sampling)
+Chain 3:                2.02492 seconds (Total)
+Chain 3: 
+Chain 4: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 1.01535 seconds (Warm-up)
+Chain 4:                1.01986 seconds (Sampling)
+Chain 4:                2.0352 seconds (Total)
+Chain 4: 
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 3.2e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.32 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: WARNING: No variance estimation is
+Chain 1:          performed for num_warmup < 20
+Chain 1: 
+Chain 1: Iteration: 1 / 1 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 1e-06 seconds (Warm-up)
+Chain 1:                0.000102 seconds (Sampling)
+Chain 1:                0.000103 seconds (Total)
+Chain 1: 
+Computing WAIC
+Constructing posterior predictions
+[ 600 / 6000 ][ 1200 / 6000 ][ 1800 / 6000 ][ 2400 / 6000 ][ 3000 / 6000 ][ 3600 / 6000 ][ 4200 / 6000 ][ 4800 / 6000 ][ 5400 / 6000 ][ 6000 / 6000 ]
+Aggregated binomial counts detected. Splitting to 0/1 outcome for WAIC calculation.
+Warning messages:
+1: There were 1 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them. 
+2: Examine the pairs() plot to diagnose sampling problems
+ 
+> 
+> m4 <- map2stan(
++   alist(
++     count ~ dbinom(total, p),
++     logit(p) <- a[s] + b1 * TTAint + b2 * side + b3 * TTAint * side,
++     a[s] ~ dnorm(0, 10),
++     b1 ~ dnorm(0, 10),
++     b2 ~ dnorm(0, 10),
++     b3 ~ dnorm(0, 10)
++   ),
++   data = data, iter = 3000, warmup = 1500, chain = 4, cores = 4
++ )
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 6.3e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.63 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 6.1e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.61 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 6.3e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.63 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 3000 [  0%]  (Warmup)
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 6.1e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.61 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 3000 [  0%]  (Warmup)
+Chain 2: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 1: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 3: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 4: Iteration:  300 / 3000 [ 10%]  (Warmup)
+Chain 2: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 3: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 1: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 4: Iteration:  600 / 3000 [ 20%]  (Warmup)
+Chain 1: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 3: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 2: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 4: Iteration:  900 / 3000 [ 30%]  (Warmup)
+Chain 1: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 4: Iteration: 1200 / 3000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1500 / 3000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1501 / 3000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 3: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 2: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1800 / 3000 [ 60%]  (Sampling)
+Chain 1: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 3: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 2: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 4: Iteration: 2100 / 3000 [ 70%]  (Sampling)
+Chain 1: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 3: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 2: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 4: Iteration: 2400 / 3000 [ 80%]  (Sampling)
+Chain 1: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 2: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2700 / 3000 [ 90%]  (Sampling)
+Chain 1: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 1.80318 seconds (Warm-up)
+Chain 1:                1.58024 seconds (Sampling)
+Chain 1:                3.38343 seconds (Total)
+Chain 1: 
+Chain 2: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 1.83487 seconds (Warm-up)
+Chain 2:                1.56272 seconds (Sampling)
+Chain 2:                3.3976 seconds (Total)
+Chain 2: 
+Chain 3: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 1.76855 seconds (Warm-up)
+Chain 3:                1.61886 seconds (Sampling)
+Chain 3:                3.38741 seconds (Total)
+Chain 3: 
+Chain 4: Iteration: 3000 / 3000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 1.81266 seconds (Warm-up)
+Chain 4:                1.60888 seconds (Sampling)
+Chain 4:                3.42155 seconds (Total)
+Chain 4: 
+
+SAMPLING FOR MODEL 'count ~ dbinom(total, p)' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 4.4e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.44 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: WARNING: No variance estimation is
+Chain 1:          performed for num_warmup < 20
+Chain 1: 
+Chain 1: Iteration: 1 / 1 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0 seconds (Warm-up)
+Chain 1:                0.000102 seconds (Sampling)
+Chain 1:                0.000102 seconds (Total)
+Chain 1: 
+Computing WAIC
+Constructing posterior predictions
+[ 600 / 6000 ][ 1200 / 6000 ][ 1800 / 6000 ][ 2400 / 6000 ][ 3000 / 6000 ][ 3600 / 6000 ][ 4200 / 6000 ][ 4800 / 6000 ][ 5400 / 6000 ][ 6000 / 6000 ]
+Aggregated binomial counts detected. Splitting to 0/1 outcome for WAIC calculation.
+Warning messages:
+1: There were 21 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them. 
+2: Examine the pairs() plot to diagnose sampling problems
+ 
+3: There were 1 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them. 
+4: Examine the pairs() plot to diagnose sampling problems
+ 
+5: In map2stan(alist(count ~ dbinom(total, p), logit(p) <- a[s] + b1 *  :
+  There were 21 divergent iterations during sampling.
+Check the chains (trace plots, n_eff, Rhat) carefully to ensure they are valid.
+> 
+> save(m0, m1, m2, m3, m4, file = "tests/extdata/mid-stage/safe_given_postcar_eeg.RData")
+> 
+> proc.time()
+   user  system elapsed 
+ 250.91   22.07  197.46 

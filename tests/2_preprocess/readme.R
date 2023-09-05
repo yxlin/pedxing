@@ -1,0 +1,81 @@
+pkg <- c('data.table')
+sapply(pkg, require, character.only = TRUE)
+rm (list = ls())
+wk <- ifelse(.Platform$OS.type =="windows", 
+             shortPathName("E:/Documents/pedxing/"),
+             '/media/yslin/Tui/Documents/pedxing/')
+
+setwd(wk)
+options(digits = 4)
+# source("tests/testthat/1_descriptive/functions/utils.R")
+load("data/pedxing.RData")
+## do data.frame composes of two behavioural data sets, one from the online
+## road-crossing experiment and the other is from the laboratory road-crossing
+## experiment. The latter recorded also brain activities. See BDF file in the 
+## pedxingEEG
+
+## I note the less obvious columns only. The column with clear column names 
+## should have explained themselves. Other less clear, unexplained columns 
+## are less relevant to the analysis and can be found in the experiment planning
+## overview document.
+
+## "Delay" the delay time between the chime and the appearance of the car
+## "Hit" whether the response resulting in the pedestrian being hit by the car
+## "s" subject ID
+## "sNme" subject ID in the original anonymous label
+## "E" online or laboratory experiment
+## "R" response type. A name labelling for the "Hit" column
+## "C" correct or error response. Whether the response resulting in a hit or 
+## unsafe cross
+## "G" Whether the response resulting in  a pre-car or a post-car response.
+str(d0)
+# Classes 'data.table' and 'data.frame':	9216 obs. of  23 variables:
+# $ Trial                 : int  1 2 3 4 5 6 7 8 9 10 ...
+# $ TTA                   : num  3 3.5 2.5 4 3 4 3 2.5 2.5 4 ...
+# $ Jitter                : num  0.0826 -0.0441 -0.0853 -0.0318 -0.0831 ...
+# $ Side                  : Factor w/ 2 levels "left","right": 1 2 1 1 1 2 2 1 1 2 ...
+# $ Delay                 : num  2.5 2.5 2 2 2.5 2 3 3 2 2 ...
+# $ TrialStartTime        : num  15.6 23.7 31.4 38.7 45.8 ...
+# $ CarAppearingTime      : num  18.1 26.2 33.4 40.7 48.3 ...
+# $ CrossingkeyPressedTime: num  19 26.8 34 41.2 48.9 ...
+# $ Hit                   : logi  TRUE FALSE TRUE FALSE FALSE FALSE ...
+# $ OtherKeyPressedTime   : num  -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 ...
+# $ FirstKeyPressed       : chr  "Space" "Space" "Space" "Space" ...
+# $ AvgFPS                : num  120 120 120 120 120 ...
+# $ s                     : int  2 2 2 2 2 2 2 2 2 2 ...
+# $ age                   : num  41 41 41 41 41 41 41 41 41 41 ...
+# $ sex                   : chr  "male" "male" "male" "male" ...
+# $ sNme                  : chr  "mNoy" "mNoy" "mNoy" "mNoy" ...
+# $ E                     : chr  "exp" "exp" "exp" "exp" ...
+# $ BeforeCarPassed       : logi  TRUE TRUE TRUE TRUE TRUE TRUE ...
+# $ RT                    : num  0.965 0.608 0.597 0.48 0.543 ...
+# $ TTANme                : Factor w/ 4 levels "2.5","3","3.5",..: 2 3 1 4 2 4 2 1 1 4 ...
+# $ R                     : Factor w/ 2 levels "hit","safe": 1 2 1 2 2 2 2 1 1 2 ...
+# $ C                     : logi  FALSE TRUE FALSE TRUE TRUE TRUE ...
+# $ G                     : Factor w/ 2 levels "after","before": 2 2 2 2 2 2 2 2 2 2 ...
+
+dexp <- d0[E=='exp']
+#       Trial TTA   Jitter  Side Delay TrialStartTime CarAppearingTime CrossingkeyPressedTime   Hit OtherKeyPressedTime FirstKeyPressed
+#    1:     1 3.0  0.08259  left   2.5          15.56            18.07                  19.03  TRUE                  -1           Space
+#    2:     2 3.5 -0.04411 right   2.5          23.67            26.17                  26.78 FALSE                  -1           Space
+#    3:     3 2.5 -0.08529  left   2.0          31.42            33.43                  34.03  TRUE                  -1           Space
+#    4:     4 4.0 -0.03184  left   2.0          38.67            40.69                  41.17 FALSE                  -1           Space
+#    5:     5 3.0 -0.08310  left   2.5          45.81            48.31                  48.86 FALSE                  -1           Space
+#   ---
+# 3836:    60 3.5 -0.08848  left   2.0        2848.73          2850.74                2854.96 FALSE                  -1           Space
+# 3837:    61 2.5  0.04157  left   2.5        2857.23          2859.73                2862.86 FALSE                  -1           Space
+# 3838:    62 3.0  0.08191  left   2.5        2865.14          2867.65                2871.61 FALSE                  -1           Space
+# 3839:    63 4.0  0.03764  left   2.0        2873.89          2875.90                2881.06 FALSE                  -1           Space
+# 3840:    64 3.0  0.06365 right   2.0        2883.34          2885.35                2889.10 FALSE                  -1           Space
+#       AvgFPS  s age  sex sNme   E BeforeCarPassed     RT TTANme    R     C      G
+#    1:    120  2  41 male mNoy exp            TRUE 0.9650      3  hit FALSE before
+#    2:    120  2  41 male mNoy exp            TRUE 0.6078    3.5 safe  TRUE before
+#    3:    120  2  41 male mNoy exp            TRUE 0.5972    2.5  hit FALSE before
+#    4:    120  2  41 male mNoy exp            TRUE 0.4796      4 safe  TRUE before
+#    5:    120  2  41 male mNoy exp            TRUE 0.5429      3 safe  TRUE before
+#   ---
+# 3836:    120 22  38 male 5NNB exp           FALSE 4.2200    3.5 safe  TRUE  after
+# 3837:    120 22  38 male 5NNB exp           FALSE 3.1280    2.5 safe  TRUE  after
+# 3838:    120 22  38 male 5NNB exp           FALSE 3.9580      3 safe  TRUE  after
+# 3839:    120 22  38 male 5NNB exp           FALSE 5.1580      4 safe  TRUE  after
+# 3840:    120 22  38 male 5NNB exp           FALSE 3.7540      3 safe  TRUE  after
