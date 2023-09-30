@@ -2,32 +2,25 @@ pkg <- c('data.table')
 sapply(pkg, require, character.only = TRUE)
 rm (list = ls())
 wk <- ifelse(.Platform$OS.type =="windows", 
-             shortPathName("E:/Documents/pedxing/"),
-             '/media/yslin/Tui/Documents/pedxing/')
+             shortPathName("E:/pedxing/"),
+             '/media/yslin/Tui/pedxing/')
 
 setwd(wk)
-options(digits = 4)
-# source("tests/testthat/1_descriptive/functions/utils.R")
-load("data/pedxing.RData")
-## d data.frame composes of two behavioural data sets, one from the online
-## road-crossing experiment and the other is from the laboratory road-crossing
-## experiment. The latter recorded also brain activities. See BDF file in the 
-## pedxingEEG
+load("data/ped.rda")
+## d data.frame composed of two behavioral data sets, one from the online
+## road-crossing experiment, and the other is from the laboratory road-crossing
+## experiment. The latter also recorded brain activities. See the BDF files.
 
-## I note the less obvious columns only. The column with clear column names 
-## should have explained themselves. Other less clear, unexplained columns 
-## are less relevant to the analysis and can be found in the other 
-## document.
-
+## The columns with names that explained themselves were not noted. 
+##
 ## "Delay" the delay time between the chime and the appearance of the car
 ## "Hit" whether the response resulting in the pedestrian being hit by the car
 ## "s" subject ID
 ## "sNme" subject ID in the original anonymous label
 ## "E" online or laboratory experiment
-## "R" response type. A name labelling for the "Hit" column
-## "C" correct or error response. Whether the response resulting in a hit or 
-## unsafe cross
-## "G" Whether the response resulting in  a pre-car or a post-car response.
+## "R" response type. A named label for the "Hit" column
+## "C" correct or error response. Whether the response results in a hit or unsafe cross
+## "G" Whether the response results in  pre- or post-car responses.
 str(d0)
 # Classes 'data.table' and 'data.frame':	9216 obs. of  23 variables:
 # $ Trial                 : int  1 2 3 4 5 6 7 8 9 10 ...
